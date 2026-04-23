@@ -7,9 +7,21 @@
     --bg-light: rgba(255, 255, 255, 0.03);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Inter', sans-serif; }
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+html { 
+    scroll-behavior: smooth; 
+}
+
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text-main); 
+    font-family: 'Inter', sans-serif; 
+}
 
 /* Navbar */
 .navbar { display: flex; justify-content: space-between; align-items: center; padding: 25px 50px; border-bottom: 1px solid var(--border-color); }
@@ -112,5 +124,5 @@ footer { display: flex; justify-content: space-between; align-items: center; pad
 /* Responsive (iPad/Mobil Uyumluluk) */
 @media (max-width: 1024px) {
     .bottom-widgets { grid-template-columns: 1fr; }
-    .nav-links { display: none; } /* Mobil için menüyü gizle */
+    .nav-links { display: none; }
 }
