@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PerthSanta Archive</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div style="text-align: center; padding: 150px 20px;">
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 20px;">Join the Archive</h1>
+        <p style="color: var(--text-muted); margin-bottom: 40px;">Connect with your Google account to start sharing.</p>
+        
+        <button id="google-login-btn" class="btn-primary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px;">
+            <span>G</span> Log in with Google
+        </button>
+        
+        <br><br>
+        <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem;">← Back to Home</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // BURAYA Firebase'den kopyaladığın o firebaseConfig kısmını yapıştır
+        const firebaseConfig = {
+            apiKey: "SENIN_API_KEY",
+            authDomain: "SENIN_PROJECT.firebaseapp.com",
+            projectId: "SENIN_PROJECT_ID",
+            storageBucket: "SENIN_PROJECT.appspot.com",
+            messagingSenderId: "ID_NUMARAN",
+            appId: "APP_ID"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Butona tıklandığında çalışacak fonksiyon
+        document.getElementById('google-login-btn').addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    alert("Hoş geldin " + user.displayName + "!");
+                    window.location.href = "index.html"; // Giriş yapınca ana sayfaya döner
+                }).catch((error) => {
+                    console.error("Hata:", error.message);
+                });
+        });
+    </script>
+
+</body>
+</html>
