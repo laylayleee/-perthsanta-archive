@@ -13,42 +13,47 @@
         <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 20px;">Join the Archive</h1>
         <p style="color: var(--text-muted); margin-bottom: 40px;">Connect with your Google account to start sharing.</p>
         
-        <button id="google-login-btn" class="btn-primary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px;">
-            <span>G</span> Log in with Google
+        <button id="google-login-btn" class="btn-primary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-family: 'Inter', sans-serif;">
+            <span style="font-weight: bold; font-size: 1.2rem;">G</span> Log in with Google
         </button>
         
         <br><br>
-        <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem;">← Back to Home</a>
+        <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem; transition: color 0.3s ease;">← Back to Home</a>
     </div>
 
     <script type="module">
+        // Firebase ana SDK'sı ve Kimlik Doğrulama (Auth) modülleri
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // BURAYA Firebase'den kopyaladığın o firebaseConfig kısmını yapıştır
+        // Senin gönderdiğin Firebase yapılandırması
         const firebaseConfig = {
-            apiKey: "SENIN_API_KEY",
-            authDomain: "SENIN_PROJECT.firebaseapp.com",
-            projectId: "SENIN_PROJECT_ID",
-            storageBucket: "SENIN_PROJECT.appspot.com",
-            messagingSenderId: "ID_NUMARAN",
-            appId: "APP_ID"
+            apiKey: "AIzaSyAAnSomEkoi6eeIhPyMuIh5UHzV6N_dz1o",
+            authDomain: "perthsanta-archive.firebaseapp.com",
+            projectId: "perthsanta-archive",
+            storageBucket: "perthsanta-archive.firebasestorage.app",
+            messagingSenderId: "263428342411",
+            appId: "1:263428342411:web:1e23a5bdd8b8987b2cca8e",
+            measurementId: "G-J0CCVHL7LC"
         };
 
-        // Firebase'i başlat
+        // Firebase'i ve Auth servisini başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // Butona tıklandığında çalışacak fonksiyon
+        // Butona tıklandığında çalışacak Google Giriş Penceresi
         document.getElementById('google-login-btn').addEventListener('click', () => {
             signInWithPopup(auth, provider)
                 .then((result) => {
                     const user = result.user;
-                    alert("Hoş geldin " + user.displayName + "!");
-                    window.location.href = "index.html"; // Giriş yapınca ana sayfaya döner
+                    // Giriş başarılı olursa ekranda isimle selamlama çıkar
+                    alert("Welcome to the Archive, " + user.displayName + "!");
+                    // Ana sayfaya geri yönlendir
+                    window.location.href = "index.html"; 
                 }).catch((error) => {
-                    console.error("Hata:", error.message);
+                    console.error("Giriş Hatası:", error.message);
+                    alert("Giriş yapılamadı. Lütfen tekrar dene.");
                 });
         });
     </script>
