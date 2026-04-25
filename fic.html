@@ -11,9 +11,16 @@
         .page-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
         .add-btn { background-color: #4da6ff; color: #000; padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
         .form-section { background: #1a1a1a; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: none; }
-        .form-section input, .form-section textarea { width: 100%; padding: 10px; margin: 10px 0; background: #333; border: 1px solid #444; color: white; border-radius: 5px; }
+        .form-section input, .form-section textarea { width: 100%; padding: 10px; margin: 10px 0; background: #333; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
         .submit-btn { background-color: #00cc66; color: black; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
         
+        /* Rastgele Fic Jeneratörü Tasarımı */
+        .randomizer-box { background: #1a1a1a; padding: 25px; border-radius: 10px; text-align: center; margin-bottom: 40px; border: 1px solid #333; }
+        .random-btn { background-color: #ff9933; color: black; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: transform 0.2s; }
+        .random-btn:hover { transform: scale(1.05); }
+        .random-result { display: none; margin-top: 20px; background: #111; padding: 20px; border-radius: 8px; border: 1px dashed #ff9933; text-align: left; }
+        .random-result h3 { margin-top: 0; color: #ff9933; }
+
         /* Fic Kartları Tasarımı */
         .fic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .fic-card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 10px; }
@@ -42,6 +49,19 @@
             <button id="toggle-form-btn" class="add-btn">+ Add a Fic</button>
         </header>
 
+        <section class="randomizer-box">
+            <h2 style="margin-top:0;">Not sure what to read today?</h2>
+            <p style="color:#aaa; margin-bottom:20px;">Let the archive pick a random story for you!</p>
+            <button id="random-fic-btn" class="random-btn">🎲 Suggest Me a Fic!</button>
+            
+            <div id="random-result" class="random-result">
+                <h3 id="random-title"></h3>
+                <div class="author" id="random-author" style="font-size: 12px; color: #777; margin-bottom: 10px;"></div>
+                <p id="random-summary" style="font-size: 14px; color: #ddd;"></p>
+                <div id="random-links" class="read-links" style="margin-top: 15px;"></div>
+            </div>
+        </section>
+
         <section id="fic-form-section" class="form-section">
             <h2 style="margin-top:0;">Share a Fanfiction</h2>
             <form id="fic-form">
@@ -54,6 +74,7 @@
             </form>
         </section>
 
+        <h2 style="border-bottom: 1px solid #333; padding-bottom: 10px;">Latest Updates</h2>
         <section class="fic-grid" id="fics-container">
             </section>
     </main>
@@ -82,6 +103,8 @@
         const ficForm = document.getElementById('fic-form');
         const ficsContainer = document.getElementById('fics-container');
         const formMessage = document.getElementById('form-message');
+        
+        let allFicsArray = []; // Rulet için tüm ficleri tutacağımız liste
 
         // Formu aç/kapat
         toggleBtn.addEventListener('click', () => {
@@ -128,11 +151,14 @@
             }
         });
 
-        // Veritabanından Ficleri Çekip Ekranda Gösterme
+        // Veritabanından Ficleri Çekme ve Ekranda Gösterme
         db.collection("fics").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             ficsContainer.innerHTML = '';
+            allFicsArray = []; // Listeyi sıfırla
+
             snapshot.forEach((doc) => {
                 const fic = doc.data();
+                allFicsArray.push(fic); // Rulet için listeye ekle
                 
                 let linksHTML = '';
                 if (fic.wattpad) linksHTML += `<a href="${fic.wattpad}" target="_blank">Read on Wattpad</a>`;
@@ -151,6 +177,39 @@
                 ficsContainer.innerHTML += ficCard;
             });
         });
+
+        // Rastgele Fic Ruleti Mantığı
+        const randomBtn = document.getElementById('random-fic-btn');
+        const randomResult = document.getElementById('random-result');
+
+        randomBtn.addEventListener('click', () => {
+            if (allFicsArray.length === 0) {
+                alert("The archive is empty right now! Be the first to add a fic.");
+                return;
+            }
+
+            randomResult.style.display = 'block';
+            document.getElementById('random-title').textContent = "🎲 Searching the archive...";
+            document.getElementById('random-author').textContent = "";
+            document.getElementById('random-summary').textContent = "";
+            document.getElementById('random-links').innerHTML = "";
+
+            // Ufak bir bekleme (heyecan) efekti
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * allFicsArray.length);
+                const selectedFic = allFicsArray[randomIndex];
+
+                document.getElementById('random-title').textContent = selectedFic.title;
+                document.getElementById('random-author').textContent = "Posted by: " + selectedFic.authorName;
+                document.getElementById('random-summary').textContent = selectedFic.summary;
+
+                let linksHTML = '';
+                if (selectedFic.wattpad) linksHTML += `<a href="${selectedFic.wattpad}" target="_blank">Read on Wattpad</a>`;
+                if (selectedFic.ao3) linksHTML += `<a href="${selectedFic.ao3}" target="_blank">Read on AO3</a>`;
+                document.getElementById('random-links').innerHTML = linksHTML;
+            }, 600); // 0.6 saniye sonra sonucu gösterir
+        });
+
     </script>
 </body>
 </html>
