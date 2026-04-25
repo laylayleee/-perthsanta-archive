@@ -3,30 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PerthSanta Archive</title>
+    <title>Login | PerthSanta Archive</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .login-container { text-align: center; margin-top: 100px; color: white; }
+        .btn-google { background-color: white; color: black; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 20px; }
+        #user-info { margin-top: 30px; font-size: 18px; }
+        .logout-btn { background-color: #ff4c4c; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="logo">✦ PERTHSANTA <br><span>ARCHIVE</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">HOME</a></li>
+        </ul>
+    </nav>
 
-    <div style="text-align: center; padding: 150px 20px;">
-        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 20px;">Join the Archive</h1>
-        <p style="color: var(--text-muted); margin-bottom: 40px;">Connect with your Google account to start sharing.</p>
+    <div class="login-container">
+        <h1>Join the Archive</h1>
+        <p>Connect with your Google account to start sharing.</p>
         
-        <button id="google-login-btn" class="btn-primary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-family: 'Inter', sans-serif;">
-            <span style="font-weight: bold; font-size: 1.2rem;">G</span> Log in with Google
-        </button>
-        
-        <br><br>
-        <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem; transition: color 0.3s ease;">← Back to Home</a>
+        <div id="login-section">
+            <button id="google-login-btn" class="btn-google">
+                Log in with Google
+            </button>
+        </div>
+
+        <div id="user-info" style="display:none;">
+            <p>Welcome, <span id="user-name" style="color: #4da6ff;"></span>!</p>
+            <p>You are successfully logged in. You can now post fics and fanarts!</p>
+            <button id="logout-btn" class="logout-btn">Logout</button>
+            <br><br>
+            <a href="index.html" style="color: white; text-decoration: underline;">Go back to Home</a>
+        </div>
     </div>
 
-    <script type="module">
-        // Firebase ana SDK'sı ve Kimlik Doğrulama (Auth) modülleri
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-        // Senin gönderdiğin Firebase yapılandırması
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAAnSomEkoi6eeIhPyMuIh5UHzV6N_dz1o",
             authDomain: "perthsanta-archive.firebaseapp.com",
@@ -37,26 +54,37 @@
             measurementId: "G-J0CCVHL7LC"
         };
 
-        // Firebase'i ve Auth servisini başlat
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
 
-        // Butona tıklandığında çalışacak Google Giriş Penceresi
-        document.getElementById('google-login-btn').addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const user = result.user;
-                    // Giriş başarılı olursa ekranda isimle selamlama çıkar
-                    alert("Welcome to the Archive, " + user.displayName + "!");
-                    // Ana sayfaya geri yönlendir
-                    window.location.href = "index.html"; 
-                }).catch((error) => {
-                    console.error("Giriş Hatası:", error.message);
-                    alert("Giriş yapılamadı. Lütfen tekrar dene.");
-                });
+        const loginBtn = document.getElementById('google-login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginSection = document.getElementById('login-section');
+        const userInfoSection = document.getElementById('user-info');
+        const userNameSpan = document.getElementById('user-name');
+
+        // Oturum durumunu dinle
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loginSection.style.display = 'none';
+                userInfoSection.style.display = 'block';
+                userNameSpan.textContent = user.displayName;
+            } else {
+                loginSection.style.display = 'block';
+                userInfoSection.style.display = 'none';
+            }
+        });
+
+        // Giriş Yap Butonu
+        loginBtn.addEventListener('click', () => {
+            auth.signInWithPopup(provider).catch(error => alert(error.message));
+        });
+
+        // Çıkış Yap Butonu
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut();
         });
     </script>
-
 </body>
 </html>
