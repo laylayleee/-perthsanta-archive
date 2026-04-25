@@ -3,100 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fic Archive - PerthSanta Archive</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        /* Fic Kartları İçin Ekstra Tasarım */
-        .fic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 40px 50px; }
-        .fic-card { background-color: var(--bg-light); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; transition: transform 0.3s ease; }
-        .fic-card:hover { transform: translateY(-5px); border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(168, 85, 247, 0.15); }
-        .fic-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-main); margin-bottom: 10px; }
-        .fic-author { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
-        .fic-tag { display: inline-block; background: rgba(168, 85, 247, 0.1); color: var(--accent-purple); padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; border: 1px solid rgba(168, 85, 247, 0.3); }
-    </style>
+    <title>Fic Archive | PerthSanta</title>
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
+    <header>
+        <h1>Fic Archive</h1>
+        <nav><a href="index.html">Back to Home</a></nav>
+    </header>
 
-    <nav class="navbar">
-        <div class="logo">✦ PERTHSANTA <br><span>ARCHIVE</span></div>
-        <ul class="nav-links">
-            <li><a href="index.html">HOME</a></li>
-            <li><a href="about.html">ABOUT</a></li>
-            <li><a href="fanart.html">FANART</a></li>
-            <li><a href="fic.html" class="active">FIC ARCHIVE</a></li>
-            <li><a href="projects.html">PROJECTS</a></li>
-            <li><a href="community.html">COMMUNITY</a></li>
-        </ul>
-        <div class="nav-icons">
-            <a href="search.html" style="text-decoration: none; color: inherit;"><span>🔍</span></a>
-            <a href="notifications.html" style="text-decoration: none; color: inherit;"><span>🔔</span></a>
-            <a href="login.html" style="text-decoration: none; color: inherit;"><span>👤</span></a>
-        </div>
-    </nav>
+    <main>
+        <section id="add-fic-section">
+            <h2>Add a New Fic</h2>
+            <form id="fic-form">
+                <input type="text" id="fic-title" placeholder="Fic Title" required>
+                <textarea id="fic-summary" placeholder="Plot / Summary" required></textarea>
+                <input type="url" id="ao3-link" placeholder="AO3 Link (Optional)">
+                <input type="url" id="wattpad-link" placeholder="Wattpad Link (Optional)">
+                <button type="submit">Submit Fic</button>
+            </form>
+        </section>
 
-    <div style="text-align: center; padding: 60px 20px 20px;">
-        <h1 style="font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 10px;">Fic Archive</h1>
-        <p style="color: var(--text-muted);">Explore stories written by the community.</p>
-    </div>
-
-    <div id="fics-container" class="fic-grid">
-        <p style="text-align: center; color: var(--text-muted); width: 100%;">Loading stories from the archive...</p>
-    </div>
-
-    <footer>
-        <div class="footer-left">✦ PERTHSANTA ARCHIVE<br><span>A fanmade archive for PerthSanta fans.</span></div>
-        <div class="footer-links"><a href="rules.html">RULES</a></div>
-    </footer>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // Senin Firebase Şifrelerin
-        const firebaseConfig = {
-            apiKey: "AIzaSyAAnSomEkoi6eeIhPyMuIh5UHzV6N_dz1o",
-            authDomain: "perthsanta-archive.firebaseapp.com",
-            projectId: "perthsanta-archive",
-            storageBucket: "perthsanta-archive.firebasestorage.app",
-            messagingSenderId: "263428342411",
-            appId: "1:263428342411:web:1e23a5bdd8b8987b2cca8e",
-            measurementId: "G-J0CCVHL7LC"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Veritabanındaki 'fics' klasörünü oku ve ekrana bas
-        async function loadFics() {
-            const ficsContainer = document.getElementById("fics-container");
-            const querySnapshot = await getDocs(collection(db, "fics"));
-            
-            ficsContainer.innerHTML = ""; // Yükleniyor yazısını temizle
-
-            if(querySnapshot.empty) {
-                ficsContainer.innerHTML = "<p style='text-align:center; color:#8b8a96; width:100%;'>No stories found yet. Be the first to share!</p>";
-                return;
-            }
-
-            querySnapshot.forEach((doc) => {
-                const ficData = doc.data();
-                
-                // Hikaye Kartını Oluştur
-                const ficCard = `
-                    <div class="fic-card">
-                        <div class="fic-title">${ficData.title}</div>
-                        <div class="fic-author">by ${ficData.author}</div>
-                        <span class="fic-tag">Wattpad / AO3</span>
-                    </div>
-                `;
-                ficsContainer.innerHTML += ficCard;
-            });
-        }
-
-        // Sayfa açıldığında fonksiyonu çalıştır
-        loadFics();
-    </script>
-
+        <section id="fic-display-area">
+            <h2>Community Fics</h2>
+            <div id="fics-container">
+                </div>
+        </section>
+    </main>
 </body>
 </html>
